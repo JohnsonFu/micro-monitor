@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
         @RequestMapping("/")
         String home() {
-            return "main";
+            return "chart";
         }
 
 
