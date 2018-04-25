@@ -21,7 +21,7 @@ public class ContainerDaoImpl implements ContainerDao {
     @Value("${cadvisor.database}")
     private String database;
 
-    public void test(String command){
+    public void query(String command){
       QueryResult queryResult = influxDb.query(new Query(command, database));
         List<QueryResult.Result> results = queryResult.getResults();
         if (CollectionUtils.isNotEmpty(results)) {

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
         @RequestMapping("/")
         String home() {
-           containerDao.test("select * from \"memory_usage\" limit 10");
-            return "chart";
+           //containerDao.query("select * from \"memory_usage\" limit 10");
+            return "echart";
         }
 
 
