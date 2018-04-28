@@ -334,9 +334,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    <tr class="odd gradeA" th:each="container:${containers}">
-                                        <td th:text="${container.getName()}"></td>
-                                        <td th:text="${container.getMachine()}"></td>
+                                    <tr class="odd gradeA" th:each="con:${containers}">
+                                        <td><label th:text="${con.name}" th:onclick="'javascript:show(\''+${con.name}+'\');'"></label></td>
+                                        <td th:text="${con.machine}"></td>
                                     </tr>
                                     <!--<tr class="odd gradeX">-->
                                             <!--<td>Trident</td>-->
@@ -1048,6 +1048,11 @@
     </script>
          <!-- Custom Js -->
     <script src="../static/bootstrap/js/custom-scripts.js"></script>
+    <script type="text/javascript">
+        function show(i){
+            alert(i);
+        }
+        </script>
     
    
 </body>
