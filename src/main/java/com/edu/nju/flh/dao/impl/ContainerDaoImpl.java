@@ -43,16 +43,29 @@ public class ContainerDaoImpl implements ContainerDao {
         if (CollectionUtils.isNotEmpty(results)) {
             for (QueryResult.Result result : results) {
                List<QueryResult.Series>seriesList=result.getSeries();
+                if(seriesList.size()==0){
+                    return list;
+                }
                 List<List<Object>> objectList=seriesList.get(0).getValues();
                 for(List<Object> l:objectList){
-                    for(Object object:l)
-                    {
-                        System.out.println(object);
+                    for(Object object:l){
+                        container cont = transferToContainer(object.toString());
+                        list.add(cont);
+                        //System.out.println(object);
                     }
                 }
-               // System.out.println(seriesList.get(0).getValues());
             }
         }
     return list;
 }
+
+    private container transferToContainer(String s) {
+        String[] stringbuffer=s.split(",");
+        container cont=new container();
+        String contName=stringbuffer[1].split("=")[1];
+        String machName=stringbuffer[2].split("=")[1];
+        cont.setName(contName);
+        cont.setMachine(machName);
+        return cont;
+    }
 }
