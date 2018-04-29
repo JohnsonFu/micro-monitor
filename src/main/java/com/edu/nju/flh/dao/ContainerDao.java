@@ -8,4 +8,5 @@ import java.util.List;
 public interface ContainerDao {
     public void query(String command);
     public List<container> listAllContainers();
+    public List<String> listAllMeasurements();
 }

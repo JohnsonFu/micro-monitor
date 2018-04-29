@@ -25,6 +25,9 @@ public class ContainerDaoImpl implements ContainerDao {
     @Value("${cadvisor.listAllContainerSQL}")
     private String listAllContainerSQL;
 
+    @Value("${cadvisor.listAllMeasSQL}")
+    private String listAllMeasSQL;
+
     public void query(String command) {
         QueryResult queryResult = influxDb.query(new Query(command, database));
         List<QueryResult.Result> results = queryResult.getResults();
@@ -51,13 +54,35 @@ public class ContainerDaoImpl implements ContainerDao {
                     for(Object object:l){
                         container cont = transferToContainer(object.toString());
                         list.add(cont);
-                        //System.out.println(object);
                     }
                 }
             }
         }
     return list;
 }
+
+    @Override
+    public List<String> listAllMeasurements() {
+        List<String> list=new ArrayList<>();
+        QueryResult queryResult = influxDb.query(new Query(listAllMeasSQL, database));
+        List<QueryResult.Result> results = queryResult.getResults();
+        if (CollectionUtils.isNotEmpty(results)) {
+            for (QueryResult.Result result : results) {
+                //System.out.println(result);
+                List<QueryResult.Series>seriesList=result.getSeries();
+                if(seriesList.size()==0){
+                    return list;
+                }
+                List<List<Object>> objectList=seriesList.get(0).getValues();
+                for(List<Object> l:objectList){
+                    for(Object object:l){
+                        list.add(object.toString());
+                    }
+                }
+            }
+        }
+        return list;
+    }
 
     private container transferToContainer(String s) {
         String[] stringbuffer=s.split(",");

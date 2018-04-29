@@ -321,21 +321,21 @@
                 <div class="col-md-12">
                     <!-- Advanced Tables -->
                     <div class="panel panel-default">
-                        <div class="panel-heading">
+                        <div class="panel-heading" id="title">
                              Advanced Tables
                         </div>
                         <div class="panel-body">
                             <div class="table-responsive">
                                 <table class="table table-striped table-bordered table-hover" id="dataTables-example">
-                                    <thead>
+                                    <thead id="cont_head">
                                         <tr>
                                             <th>container name</th>
                                             <th>machine</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="cont_body">
                                     <tr class="odd gradeA" th:each="con:${containers}">
-                                        <td><label th:text="${con.name}" th:onclick="'javascript:show(\''+${con.name}+'\');'"></label></td>
+                                        <td><label th:text="${con.name}" th:onclick="'javascript:showIndex(\''+${con.name}+'\',\''+${meas}+'\');'"></label></td>
                                         <td th:text="${con.machine}"></td>
                                     </tr>
                                     <!--<tr class="odd gradeX">-->
@@ -1048,12 +1048,7 @@
     </script>
          <!-- Custom Js -->
     <script src="../static/bootstrap/js/custom-scripts.js"></script>
-    <script type="text/javascript">
-        function show(i){
-            alert(i);
-        }
-        </script>
-    
+    <script src="../static/js/container.js"></script>
    
 </body>
 </html>
