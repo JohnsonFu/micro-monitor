@@ -8,11 +8,11 @@ import lombok.Data;
 @Data
 public class container {
     /**
-     * 容器id
-     */
-    private String id;
-    /**
      * 容器名称
      */
     private String name;
+    /**
+     * 机器名称
+     */
+    private String machine;
 }
