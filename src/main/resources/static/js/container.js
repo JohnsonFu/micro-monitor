@@ -114,7 +114,7 @@ function showMonitorData(contName,feature){
         url:"showMonitorData",
         data:data,
         success:function(data){
-           alert(data.cont)
+           //alert(data.cont)
         },
         error:function(XMLHttRequest,textStatus, errorThrown){
             alert(XMLHttRequest.responseText);

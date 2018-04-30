@@ -47,10 +47,8 @@ import java.util.Map;
         Map<String, Object> map = new HashMap<>();
         String contName = request.getParameter("cName");
         String feature = request.getParameter("feat");
-        List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,500);
+        List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,1000,2);
         map.put("cont", contName+feature);
-
-       // System.out.println(contName+feature);
         return map;
     }
 
