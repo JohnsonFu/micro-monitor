@@ -95,7 +95,6 @@ function showIndex(contName,meas){
     tbody.innerHTML=""
     thead.innerHTML="<tr><th>指标名称</th><th>查看详情</th></tr>"
     var mea;
-    var test='abc'
     tbody.innerHTML+="<tbody id='cont_body'>"
     for(mea in arrList){
         tbody.innerHTML+="<tr><td><label>"+arrList[mea]+"</label></td><td><button class='btn btn-info' onclick=\"showMonitorData('"+contName+"','"+arrList[mea]+"')\">查看</button></td></tr>"
@@ -104,8 +103,23 @@ function showIndex(contName,meas){
 }
 
 function showMonitorData(contName,feature){
-    alert(contName)
-    alert(feature)
+   // alert(contName)
+    //alert(feature)
+    var data ={
+        cName:contName,
+        feat:feature,
+    }
+    $.ajax({
+        type: "POST",
+        url:"showMonitorData",
+        data:data,
+        success:function(data){
+           alert(data.cont)
+        },
+        error:function(XMLHttRequest,textStatus, errorThrown){
+            alert(XMLHttRequest.responseText);
+        },
+    });
 }
 
 function showTotal(){

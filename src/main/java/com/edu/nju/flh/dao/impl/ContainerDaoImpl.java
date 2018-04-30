@@ -2,6 +2,7 @@ package com.edu.nju.flh.dao.impl;
 
 import com.edu.nju.flh.dao.ContainerDao;
 import com.edu.nju.flh.entity.container;
+import com.edu.nju.flh.entity.monitorData;
 import org.apache.commons.collections.CollectionUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
@@ -82,6 +83,31 @@ public class ContainerDaoImpl implements ContainerDao {
             }
         }
         return list;
+    }
+
+    @Override
+    public List<monitorData> queryDataByCNameAndFeature(String contName, String feature,int count) {
+        List<monitorData> monitorDatas=new ArrayList<>();
+        String sql="select * from "+feature+" where container_name='"+contName+"' limit "+count;
+        System.out.println(sql);
+        QueryResult queryResult = influxDb.query(new Query(sql, database));
+        List<QueryResult.Result> results = queryResult.getResults();
+        if (CollectionUtils.isNotEmpty(results)) {
+            for (QueryResult.Result result : results) {
+                System.out.println(result);
+//                List<QueryResult.Series>seriesList=result.getSeries();
+//                if(seriesList.size()==0){
+//                    return list;
+//                }
+//                List<List<Object>> objectList=seriesList.get(0).getValues();
+//                for(List<Object> l:objectList){
+//                    for(Object object:l){
+//                        list.add(object.toString());
+//                    }
+//                }
+            }
+        }
+        return monitorDatas;
     }
 
     private container transferToContainer(String s) {

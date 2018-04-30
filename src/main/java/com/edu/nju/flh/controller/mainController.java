@@ -6,6 +6,7 @@ package com.edu.nju.flh.controller;
 
 import com.edu.nju.flh.dao.ContainerDao;
 import com.edu.nju.flh.entity.container;
+import com.edu.nju.flh.entity.monitorData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,21 +26,33 @@ import java.util.Map;
 
         @RequestMapping("/")
         public String home(Model model) {
-           //containerDao.query("select * from \"memory_usage\" limit 10");
            List<container> containerList=containerDao.listAllContainers();
             List<String> measurements=containerDao.listAllMeasurements();
             model.addAttribute("containers",containerList);
             model.addAttribute("meas",measurements);
             return "table";
         }
-
     @RequestMapping(value = "/showContainer", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> checkExamName(HttpServletRequest request, Model model) {
+    public Map<String, Object> showMonitor(HttpServletRequest request, Model model) {
         Map<String, Object> map = new HashMap<>();
         String contName = request.getParameter("contName");
         boolean result=false;
         map.put("contName", contName);
         return map;
     }
+    @RequestMapping(value = "/showMonitorData", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> showMonitorData(HttpServletRequest request, Model model) {
+        Map<String, Object> map = new HashMap<>();
+        String contName = request.getParameter("cName");
+        String feature = request.getParameter("feat");
+        List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,500);
+        map.put("cont", contName+feature);
+
+       // System.out.println(contName+feature);
+        return map;
+    }
+
+
     }
