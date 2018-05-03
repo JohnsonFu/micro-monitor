@@ -11,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by fulinhua on 2018/4/22.
@@ -93,20 +97,31 @@ public class ContainerDaoImpl implements ContainerDao {
         System.out.println(sql);
         QueryResult queryResult = influxDb.query(new Query(sql, database));
         List<QueryResult.Result> results = queryResult.getResults();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         if (CollectionUtils.isNotEmpty(results)) {
             for (QueryResult.Result result : results) {
-                System.out.println(result);
-//                List<QueryResult.Series>seriesList=result.getSeries();
-//                if(seriesList.size()==0){
-//                    return list;
-//                }
-//                List<List<Object>> objectList=seriesList.get(0).getValues();
-//                for(List<Object> l:objectList){
-//                    for(Object object:l){
-//                        list.add(object.toString());
-//                    }
-//                }
-            }
+                List<QueryResult.Series>seriesList=result.getSeries();
+                if(seriesList.size()==0){
+                    return monitorDatas;
+                }
+                List<List<Object>> objectList=seriesList.get(0).getValues();
+                for(List<Object> l:objectList){
+                        monitorData monitorData=new monitorData();
+                        try {
+                            String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                            Date date=sdf.parse(strings[0].toString());
+                            if(!Objects.equals(strings[1],"null")) {
+                                Double value = Double.parseDouble(strings[1].toString());
+                                monitorData.setValue(value);
+                            }
+                            monitorData.setTime(date.toString());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        monitorDatas.add(monitorData);
+                    }
+                }
+
         }
         return monitorDatas;
     }

@@ -49,6 +49,7 @@ import java.util.Map;
         String feature = request.getParameter("feat");
         List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,1000,2);
         map.put("cont", contName+feature);
+        map.put("dataList",dataList);
         return map;
     }
 

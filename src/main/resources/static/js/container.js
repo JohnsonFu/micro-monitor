@@ -81,6 +81,7 @@ function login(){
     });
 }
 
+
 function showIndex(contName,meas){
     // alert(meas.valueOf());
     // var arr=new Array();
@@ -91,7 +92,7 @@ function showIndex(contName,meas){
     var tbody=document.getElementById("cont_body");
     var title=document.getElementById("title");
     var thead=document.getElementById("cont_head");
-    title.innerHTML=contName;
+    title.innerHTML=contName+"              <button class='btn btn-success' onclick=\"back()\" style='margin-left:50px'>返回</button>";
     tbody.innerHTML=""
     thead.innerHTML="<tr><th>指标名称</th><th>查看详情</th></tr>"
     var mea;
@@ -100,6 +101,10 @@ function showIndex(contName,meas){
         tbody.innerHTML+="<tr><td><label>"+arrList[mea]+"</label></td><td><button class='btn btn-info' onclick=\"showMonitorData('"+contName+"','"+arrList[mea]+"')\">查看</button></td></tr>"
     }
     tbody.innerHTML+="</tbody>"
+}
+
+function back() {
+    location.reload();
 }
 
 function showMonitorData(contName,feature){
@@ -114,7 +119,7 @@ function showMonitorData(contName,feature){
         url:"showMonitorData",
         data:data,
         success:function(data){
-           //alert(data.cont)
+           alert(data.dataList)
         },
         error:function(XMLHttRequest,textStatus, errorThrown){
             alert(XMLHttRequest.responseText);
