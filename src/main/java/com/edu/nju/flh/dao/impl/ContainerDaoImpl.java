@@ -94,7 +94,6 @@ public class ContainerDaoImpl implements ContainerDao {
         List<monitorData> monitorDatas=new ArrayList<>();
         String sql="select mean(value) from "+feature+" where time > now() - 1d and container_name = '"+contName+"' group by time("+groupbyTimeSecond+"s) order by time desc limit "+count;
        // String sql="select * from "+feature+" where container_name='"+contName+"' limit "+count;
-        System.out.println(sql);
         QueryResult queryResult = influxDb.query(new Query(sql, database));
         List<QueryResult.Result> results = queryResult.getResults();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");

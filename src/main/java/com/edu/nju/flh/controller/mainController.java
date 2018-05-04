@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
     public class mainController {
@@ -43,13 +45,38 @@ import java.util.Map;
     }
     @RequestMapping(value = "/showMonitorData", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> showMonitorData(HttpServletRequest request, Model model) {
+    public Map<String,Object> showMonitorData(HttpServletRequest request, HttpSession session) {
         Map<String, Object> map = new HashMap<>();
         String contName = request.getParameter("cName");
         String feature = request.getParameter("feat");
         List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,1000,2);
-        map.put("cont", contName+feature);
+        map.put("path","showChart");
+        session.setAttribute("dataList",dataList);
+      //  System.out.println(dataList);
+        return map;
+    }
+
+    @RequestMapping("showChart")
+    public String showChart(Model model,HttpSession session) {
+
+        return "chart2";
+    }
+
+    @RequestMapping(value = "/showData", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> showData(HttpServletRequest request, HttpSession session) {
+        Map<String, Object> map = new HashMap<>();
+        List<monitorData> dataList= (List<monitorData>) session.getAttribute("dataList");
+      dataList=dataList.stream().filter(monitorData -> monitorData.getValue()!=0).collect(Collectors.toList());
+        List<String> xData= dataList.stream().map(data->data.getTime()).collect(Collectors.toList());
+        List<Double> yData= dataList.stream().map(monitorData -> {
+            double d=monitorData.getValue();
+            d=d*0.00000000001;
+            return d;}).collect(Collectors.toList());
         map.put("dataList",dataList);
+        map.put("xData",xData);
+        map.put("yData",yData);
+        System.out.println(yData);
         return map;
     }
 

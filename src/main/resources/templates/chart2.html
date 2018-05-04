@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script type="text/javascript" th:src="@{../static/echarts/echarts.min.js}"></script>
+    <script src="../static/bootstrap/js/jquery-1.10.2.js"></script>
+    <script src="../static/js/container.js"></script>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="main" style="width: 600px;height:400px;"></div>
+<script>
+    $(document).ready(initData2());
+</script>
+
+</body>
+</html>
