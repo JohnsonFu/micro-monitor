@@ -11,5 +11,9 @@ public class monitorData {
     private String cName;
     private int instance;
     private String machine;
-    private long value;
+    private double value;
+
+    public String toString(){
+        return "{time="+time+",cName="+cName+",machine="+machine+",value="+value+"}";
+    }
 }

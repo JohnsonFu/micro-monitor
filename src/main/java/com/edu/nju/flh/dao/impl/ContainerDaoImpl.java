@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by fulinhua on 2018/4/22.
@@ -86,29 +87,118 @@ public class ContainerDaoImpl implements ContainerDao {
     }
 
     @Override
-    public List<monitorData> queryDataByCNameAndFeature(String contName, String feature,int count) {
-        List<monitorData> monitorDatas=new ArrayList<>();
-        String sql="select * from "+feature+" where container_name='"+contName+"' limit "+count;
+    public List<monitorData> queryDataByCNameAndFeature(String contName, String feature,int count,int groupbyTimeSecond) {
+        LinkedList<monitorData> monitorDatas=new LinkedList<>();
+        String sql="select mean(value) from "+feature+" where time > now() - 1d and container_name = '"+contName+"' group by time("+groupbyTimeSecond+"s) order by time desc limit "+count;
+       // String sql="select value from "+feature+" where time > now() - 1d and container_name = '"+contName+"' order by time  limit "+count;
         System.out.println(sql);
+       // String sql="select * from "+feature+" where container_name='"+contName+"' limit "+count;
         QueryResult queryResult = influxDb.query(new Query(sql, database));
         List<QueryResult.Result> results = queryResult.getResults();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         if (CollectionUtils.isNotEmpty(results)) {
             for (QueryResult.Result result : results) {
-                System.out.println(result);
-//                List<QueryResult.Series>seriesList=result.getSeries();
-//                if(seriesList.size()==0){
-//                    return list;
-//                }
-//                List<List<Object>> objectList=seriesList.get(0).getValues();
-//                for(List<Object> l:objectList){
-//                    for(Object object:l){
-//                        list.add(object.toString());
-//                    }
-//                }
-            }
+                List<QueryResult.Series>seriesList=result.getSeries();
+                if(Objects.isNull(seriesList)||seriesList.size()==0){
+                    return monitorDatas;
+                }
+                List<List<Object>> objectList=seriesList.get(0).getValues();
+                for(List<Object> l:objectList){
+                        monitorData monitorData=new monitorData();
+                        try {
+                            String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                            Date date=sdf.parse(strings[0].toString());
+                            date.setHours(date.getHours()+8);
+                            if(!Objects.equals(strings[1],"null")) {
+                                Double value = Double.parseDouble(strings[1].toString());
+                                monitorData.setValue(value);
+                            }else{
+                                monitorData.setValue(-1);
+                            }
+                            Calendar calendar=Calendar.getInstance();
+                            calendar.setTime(date);
+                            String time=calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DAY_OF_MONTH)+" "+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+                            monitorData.setTime(time);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        monitorDatas.addFirst(monitorData);
+                    }
+                }
+
         }
         return monitorDatas;
     }
+
+    @Override
+    public List<List<monitorData>> queryPer_cpu(String contName, int count, int groupbyTimeSecond) {
+        List<List<monitorData>> monitorDatas=new ArrayList<>();
+        String sql="select mean(value) from cpu_usage_per_cpu "+" where time > now() - 1d and container_name = '"+contName+"' group by time("+groupbyTimeSecond+"s),instance order by time desc limit "+count;
+        // String sql="select value from "+feature+" where time > now() - 1d and container_name = '"+contName+"' order by time  limit "+count;
+        System.out.println(sql);
+        // String sql="select * from "+feature+" where container_name='"+contName+"' limit "+count;
+        QueryResult queryResult = influxDb.query(new Query(sql, database));
+        List<QueryResult.Result> results = queryResult.getResults();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        if (CollectionUtils.isNotEmpty(results)) {
+            for (QueryResult.Result result : results) {
+                List<QueryResult.Series>seriesList=result.getSeries();
+                if(Objects.isNull(seriesList)||seriesList.size()==0){
+                    return monitorDatas;
+                }
+                List<List<Object>> objectList1=seriesList.get(0).getValues();
+                LinkedList<monitorData> monitorDatas1=new LinkedList<>();
+                for(List<Object> l:objectList1){
+                    monitorData monitorData=new monitorData();
+                    try {
+                        String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                        Date date=sdf.parse(strings[0].toString());
+                        date.setHours(date.getHours()+8);
+                        if(!Objects.equals(strings[1],"null")) {
+                            Double value = Double.parseDouble(strings[1].toString());
+                            monitorData.setValue(value);
+                        }else{
+                            monitorData.setValue(-1);
+                        }
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.setTime(date);
+                        String time=calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DAY_OF_MONTH)+" "+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+                        monitorData.setTime(time);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    monitorDatas1.addFirst(monitorData);
+                }
+
+                List<List<Object>> objectList2=seriesList.get(1).getValues();
+                LinkedList<monitorData> monitorDatas2=new LinkedList<>();
+                for(List<Object> l:objectList2){
+                    monitorData monitorData=new monitorData();
+                    try {
+                        String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                        Date date=sdf.parse(strings[0].toString());
+                        date.setHours(date.getHours()+8);
+                        if(!Objects.equals(strings[1],"null")) {
+                            Double value = Double.parseDouble(strings[1].toString());
+                            monitorData.setValue(value);
+                        }else{
+                            monitorData.setValue(-1);
+                        }
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.setTime(date);
+                        String time=calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DAY_OF_MONTH)+" "+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+                        monitorData.setTime(time);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    monitorDatas2.addFirst(monitorData);
+                }
+                monitorDatas.add(monitorDatas2);
+                monitorDatas.add(monitorDatas1);
+            }
+
+        }
+        return monitorDatas;    }
 
     private container transferToContainer(String s) {
         String[] stringbuffer=s.split(",");
