@@ -260,6 +260,11 @@ function  initData2() {
                 name:'数据',
                 type:'line',
                 data:[]
+            },
+            {
+                name:'数据2',
+                type:'line',
+                data:[]
             }
         ]
     };
@@ -273,42 +278,75 @@ function  initData2() {
         url: "showData",
         success: function (data) {
           //  alert(data.xData)
-            var dataList=data.dataList;
-            myChart.setOption({
-                xAxis: [
-                    {
-                        data:data.xData
-                    }
-                ],
-                yAxis: [
-                    {
-                     min: data.minVal*0.98
-                    }
+            if(data.instance==1) {
+                myChart.setOption({
+                    xAxis: [
+                        {
+                            data: data.xData
+                        }
                     ],
-                dataZoom: [{
-                    type: 'slider',
-                    show: true,
-                    xAxisIndex: [0],
-                    left: '9%',
-                    bottom: -5,
-                    start: 20,
-                    end: 100 //初始化滚动条
-                }],
-                series: [
-                    {
-                        name:'数据',
-                        data:data.yData
-                     }
-                    // {
-                    //     name:'降水量',
-                    //     data:data.c_rain
-                    // },
-                    // {
-                    //     name:'平均温度',
-                    //     data:data.c_avgt
-                    // }
-                ]
-            });
+                    yAxis: [
+                        {
+                            min: data.minVal
+                        }
+                    ],
+                    dataZoom: [{
+                        type: 'slider',
+                        show: true,
+                        xAxisIndex: [0],
+                        left: '9%',
+                        bottom: -5,
+                        start: 20,
+                        end: 100 //初始化滚动条
+                    }],
+                    series: [
+                        {
+                            name: '数据',
+                            data: data.yData
+                        }
+                        // {
+                        //     name:'降水量',
+                        //     data:data.c_rain
+                        // },
+                        // {
+                        //     name:'平均温度',
+                        //     data:data.c_avgt
+                        // }
+                    ]
+                });
+            }else{
+                myChart.setOption({
+                    xAxis: [
+                        {
+                            data: data.xData
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            min: data.minVal
+                        }
+                    ],
+                    dataZoom: [{
+                        type: 'slider',
+                        show: true,
+                        xAxisIndex: [0],
+                        left: '9%',
+                        bottom: -5,
+                        start: 20,
+                        end: 100 //初始化滚动条
+                    }],
+                    series: [
+                        {
+                            name: 'instance0',
+                            data: data.yData0
+                        },
+                        {
+                            name:'instance1',
+                            data:data.yData1
+                        }
+                    ]
+                });
+            }
             myChart.hideLoading();
 
         },

@@ -5,8 +5,10 @@ package com.edu.nju.flh.controller;
  */
 
 import com.edu.nju.flh.dao.ContainerDao;
+import com.edu.nju.flh.entity.SearchResult;
 import com.edu.nju.flh.entity.container;
 import com.edu.nju.flh.entity.monitorData;
+import com.edu.nju.flh.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Controller
     public class mainController {
@@ -36,17 +37,12 @@ import java.util.stream.Collectors;
             return "table";
         }
 
-    @RequestMapping("testChart")
-    public String testChart(Model model) {
-        return "echart";
-    }
 
     @RequestMapping(value = "/showContainer", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> showMonitor(HttpServletRequest request, Model model) {
+    public Map<String, Object> showMonitor(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         String contName = request.getParameter("contName");
-        boolean result=false;
         map.put("contName", contName);
         return map;
     }
@@ -56,44 +52,54 @@ import java.util.stream.Collectors;
         Map<String, Object> map = new HashMap<>();
         String contName = request.getParameter("cName");
         String feature = request.getParameter("feat");
-        List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,2000,5);
-        map.put("path","showChart");
-        session.setAttribute("dataList",dataList);
-      //  System.out.println(dataList);
+        session.setAttribute("feat",feature);
+        if(!Objects.equals(feature,"cpu_usage_per_cpu")) {
+            List<monitorData> dataList = containerDao.queryDataByCNameAndFeature(contName, feature, 2000, 5);
+            map.put("path", "showChart");
+            session.setAttribute("dataList", dataList);
+        }else{
+            List<List<monitorData>> dataList2 = containerDao.queryPer_cpu(contName, 2000,5);
+            map.put("path", "showChart");
+            session.setAttribute("dataList2", dataList2);
+        }
         return map;
     }
 
     @RequestMapping("showChart")
-    public String showChart(Model model,HttpSession session) {
-
+    public String showChart() {
         return "chart2";
     }
 
     @RequestMapping(value = "/showData", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> showData(HttpServletRequest request, HttpSession session) {
+    public Map<String,Object> showData(HttpSession session) {
         Map<String, Object> map = new HashMap<>();
-        List<monitorData> dataList= (List<monitorData>) session.getAttribute("dataList");
-     // dataList=dataList.stream().filter(monitorData -> monitorData.getValue()!=0).collect(Collectors.toList());
-        List<String> xData= dataList.stream().map(data->data.getTime()).collect(Collectors.toList());
-        List<String> yData= dataList.stream().map(monitorData -> {
-            double d=monitorData.getValue();
-            if(Math.abs(d+1)<0.01){
-                return "";
-            }else {
-                d = d / 31536000;
-            }
-            return d+"";}).collect(Collectors.toList());
-
-        dataList=dataList.stream().filter(monitorData -> Math.abs(monitorData.getValue()+1)>0.01).collect(Collectors.toList());
-        double min= Collections.min(dataList.stream().map(monitorData -> monitorData.getValue()).collect(Collectors.toList()))/31536000;
-        System.out.println(min);
-        map.put("minVal",min);
-        map.put("xData",xData);
-        map.put("yData",yData);
-       // System.out.println(yData);
-        return map;
+        String feature = (String) session.getAttribute("feat");
+        if(!Objects.equals(feature.replace(" ",""),"cpu_usage_per_cpu")) {
+            List<monitorData> dataList = (List<monitorData>) session.getAttribute("dataList");
+            SearchResult searchResult= Converter.convertToSearchResult(dataList);
+            map.put("minVal", searchResult.getMin());
+            map.put("xData", searchResult.getXData());
+            map.put("yData", searchResult.getYData());
+            map.put("instance",1);
+            return map;
+        }else{
+            List<List<monitorData>> dataList = (List<List<monitorData>>) session.getAttribute("dataList2");
+            List<monitorData> dataList0=dataList.get(0);
+            List<monitorData> dataList1= dataList.get(1);
+            SearchResult searchResult0=Converter.convertToSearchResult(dataList0);
+            SearchResult searchResult1= Converter.convertToSearchResult(dataList1);
+            double min=Math.min(searchResult0.getMin(),searchResult1.getMin());
+            map.put("minVal", min);
+            map.put("xData", searchResult0.getXData());
+            map.put("yData0", searchResult0.getYData());
+            map.put("yData1", searchResult1.getYData());
+            map.put("instance",2);
+            return map;
+        }
     }
+
+
 
 
     }

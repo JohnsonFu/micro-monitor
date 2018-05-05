@@ -12,4 +12,5 @@ public interface ContainerDao {
     public List<container> listAllContainers();
     public List<String> listAllMeasurements();
     public List<monitorData> queryDataByCNameAndFeature(String contName,String feature,int count,int groupbyTimeSecond);
+    public List<List<monitorData>> queryPer_cpu(String contName, int i, int i1);
 }
