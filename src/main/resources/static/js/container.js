@@ -245,18 +245,19 @@ function  initData2() {
         yAxis: [
             {
                 type: 'value',
-                name: '水量',
+                name: '数值',
                 // min: 0,
                 // max: 250,
                 // interval: 50,
                 axisLabel: {
-                    formatter: '{value} ml'
+                    formatter: '{value} yr'
                 }
+
             }
         ],
         series: [
             {
-                name:'蒸发量',
+                name:'数据',
                 type:'line',
                 data:[]
             }
@@ -266,12 +267,12 @@ function  initData2() {
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
-    alert("rest")
+   // alert("rest")
     $.ajax({
         type: "POST",
         url: "showData",
         success: function (data) {
-            alert(data.xData)
+          //  alert(data.xData)
             var dataList=data.dataList;
             myChart.setOption({
                 xAxis: [
@@ -279,9 +280,23 @@ function  initData2() {
                         data:data.xData
                     }
                 ],
+                yAxis: [
+                    {
+                     min: data.minVal*0.98
+                    }
+                    ],
+                dataZoom: [{
+                    type: 'slider',
+                    show: true,
+                    xAxisIndex: [0],
+                    left: '9%',
+                    bottom: -5,
+                    start: 20,
+                    end: 100 //初始化滚动条
+                }],
                 series: [
                     {
-                        name:'蒸发量',
+                        name:'数据',
                         data:data.yData
                      }
                     // {

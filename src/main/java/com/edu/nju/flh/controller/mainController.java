@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,12 @@ import java.util.stream.Collectors;
             model.addAttribute("meas",measurements);
             return "table";
         }
+
+    @RequestMapping("testChart")
+    public String testChart(Model model) {
+        return "echart";
+    }
+
     @RequestMapping(value = "/showContainer", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> showMonitor(HttpServletRequest request, Model model) {
@@ -49,7 +56,7 @@ import java.util.stream.Collectors;
         Map<String, Object> map = new HashMap<>();
         String contName = request.getParameter("cName");
         String feature = request.getParameter("feat");
-        List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,1000,2);
+        List<monitorData> dataList=containerDao.queryDataByCNameAndFeature(contName,feature,2000,5);
         map.put("path","showChart");
         session.setAttribute("dataList",dataList);
       //  System.out.println(dataList);
@@ -67,16 +74,24 @@ import java.util.stream.Collectors;
     public Map<String,Object> showData(HttpServletRequest request, HttpSession session) {
         Map<String, Object> map = new HashMap<>();
         List<monitorData> dataList= (List<monitorData>) session.getAttribute("dataList");
-      dataList=dataList.stream().filter(monitorData -> monitorData.getValue()!=0).collect(Collectors.toList());
+     // dataList=dataList.stream().filter(monitorData -> monitorData.getValue()!=0).collect(Collectors.toList());
         List<String> xData= dataList.stream().map(data->data.getTime()).collect(Collectors.toList());
-        List<Double> yData= dataList.stream().map(monitorData -> {
+        List<String> yData= dataList.stream().map(monitorData -> {
             double d=monitorData.getValue();
-            d=d*0.00000000001;
-            return d;}).collect(Collectors.toList());
-        map.put("dataList",dataList);
+            if(Math.abs(d+1)<0.01){
+                return "";
+            }else {
+                d = d / 31536000;
+            }
+            return d+"";}).collect(Collectors.toList());
+
+        dataList=dataList.stream().filter(monitorData -> Math.abs(monitorData.getValue()+1)>0.01).collect(Collectors.toList());
+        double min= Collections.min(dataList.stream().map(monitorData -> monitorData.getValue()).collect(Collectors.toList()))/31536000;
+        System.out.println(min);
+        map.put("minVal",min);
         map.put("xData",xData);
         map.put("yData",yData);
-        System.out.println(yData);
+       // System.out.println(yData);
         return map;
     }
 
