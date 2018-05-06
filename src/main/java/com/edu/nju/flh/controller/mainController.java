@@ -12,6 +12,7 @@ import com.edu.nju.flh.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -77,24 +78,28 @@ import java.util.Objects;
         String feature = (String) session.getAttribute("feat");
         if(!Objects.equals(feature.replace(" ",""),"cpu_usage_per_cpu")) {
             List<monitorData> dataList = (List<monitorData>) session.getAttribute("dataList");
-            SearchResult searchResult= Converter.convertToSearchResult(dataList);
-            map.put("minVal", searchResult.getMin());
-            map.put("xData", searchResult.getXData());
-            map.put("yData", searchResult.getYData());
-            map.put("instance",1);
+            if(!CollectionUtils.isEmpty(dataList)) {
+                SearchResult searchResult = Converter.convertToSearchResult(dataList);
+                map.put("minVal", searchResult.getMin());
+                map.put("xData", searchResult.getXData());
+                map.put("yData", searchResult.getYData());
+                map.put("instance", 1);
+            }
             return map;
         }else{
             List<List<monitorData>> dataList = (List<List<monitorData>>) session.getAttribute("dataList2");
-            List<monitorData> dataList0=dataList.get(0);
-            List<monitorData> dataList1= dataList.get(1);
-            SearchResult searchResult0=Converter.convertToSearchResult(dataList0);
-            SearchResult searchResult1= Converter.convertToSearchResult(dataList1);
-            double min=Math.min(searchResult0.getMin(),searchResult1.getMin());
-            map.put("minVal", min);
-            map.put("xData", searchResult0.getXData());
-            map.put("yData0", searchResult0.getYData());
-            map.put("yData1", searchResult1.getYData());
-            map.put("instance",2);
+            if(!CollectionUtils.isEmpty(dataList)) {
+                List<monitorData> dataList0 = dataList.get(0);
+                List<monitorData> dataList1 = dataList.get(1);
+                SearchResult searchResult0 = Converter.convertToSearchResult(dataList0);
+                SearchResult searchResult1 = Converter.convertToSearchResult(dataList1);
+                double min = Math.min(searchResult0.getMin(), searchResult1.getMin());
+                map.put("minVal", min);
+                map.put("xData", searchResult0.getXData());
+                map.put("yData0", searchResult0.getYData());
+                map.put("yData1", searchResult1.getYData());
+                map.put("instance", 2);
+            }
             return map;
         }
     }
