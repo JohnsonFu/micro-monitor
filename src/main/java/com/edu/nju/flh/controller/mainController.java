@@ -54,6 +54,7 @@ import java.util.Objects;
         String contName = request.getParameter("cName");
         String feature = request.getParameter("feat");
         session.setAttribute("feat",feature);
+        session.setAttribute("cName",contName);
         if(!Objects.equals(feature,"cpu_usage_per_cpu")) {
             List<monitorData> dataList = containerDao.queryDataByCNameAndFeature(contName, feature, 2000, 5);
             map.put("path", "showChart");
@@ -76,6 +77,8 @@ import java.util.Objects;
     public Map<String,Object> showData(HttpSession session) {
         Map<String, Object> map = new HashMap<>();
         String feature = (String) session.getAttribute("feat");
+        String contName = (String) session.getAttribute("cName");
+        map.put("title",contName+"容器中"+feature+"数据");
         if(!Objects.equals(feature.replace(" ",""),"cpu_usage_per_cpu")) {
             List<monitorData> dataList = (List<monitorData>) session.getAttribute("dataList");
             if(!CollectionUtils.isEmpty(dataList)) {

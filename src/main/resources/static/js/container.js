@@ -277,9 +277,13 @@ function  initData2() {
         type: "POST",
         url: "showData",
         success: function (data) {
-          //  alert(data.xData)
             if(data.instance==1) {
                 myChart.setOption({
+                    title : {
+                        text: data.title,
+                        x: 'center',
+                        align: 'right'
+                    },
                     xAxis: [
                         {
                             data: data.xData
@@ -316,6 +320,11 @@ function  initData2() {
                 });
             }else{
                 myChart.setOption({
+                    title : {
+                        text: data.title,
+                        x: 'center',
+                        align: 'right'
+                    },
                     xAxis: [
                         {
                             data: data.xData
