@@ -19,9 +19,6 @@ function show(i){
         },
         error:function(XMLHttRequest,textStatus, errorThrown){
             alert(XMLHttRequest.responseText);
-//        	alert(XMLHttpRequest.status);
-//        	alert(XMLHttpRequest.readyState);
-//        	alert(textStatus);
         },
     });
 }
@@ -54,32 +51,7 @@ function check_exam_name(){
     });
 }
 
-function login(){
-    var email = $("#email").val();
-    var password = $("#password").val();
-    var data ={
-        email: email,
-        password: password
-    }
-    $.ajax({
-        type: "POST",
-        url:"/login",
-//        data: $.param({"email":$("#email").val(),"password":$("#password").val()}),
-//        dataType:json,
-        data:data,
-        async : true,
-        success:function(data){
-            var path = data.path;
-            window.location.href =path
-        },
-        error:function(XMLHttRequest,textStatus, errorThrown){
-            alert(XMLHttRequest.responseText);
-//        	alert(XMLHttpRequest.status);
-//        	alert(XMLHttpRequest.readyState);
-//        	alert(textStatus);
-        },
-    });
-}
+
 
 
 function showIndex(contName,meas){
@@ -140,81 +112,6 @@ function showTotal(){
 }
 
 
-
-function  initData() {
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
-
-    // 指定图表的配置项和数据
-    var option = {
-        title: {
-            text: 'ECharts 入门示例'
-        },
-        tooltip: {},
-        legend: {
-            data: ['销量']
-        },
-        xAxis: {
-            data: []
-        },
-        yAxis: {},
-        series: [{
-            name: '销量',
-            type: 'line',
-            data: []
-        }]
-    };
-
-    // 使用刚指定的配置项和数据显示图表。
-    //myChart.setOption(option);
-    alert("rest")
-    $.ajax({
-        type: "POST",
-        url: "showData",
-        success: function (data) {
-            alert(data.dataList)
-            var dataList=data.dataList;
-            for(var i=0;i<dataList.length;i++){
-                option.xAxis.data[i]=dataList[i].time;
-                option.series.data[i]=dataList[i].value;
-            }
-            alert(option.xAxis.data[0])
-            myChart.setOption(option)
-
-        },
-        error: function (XMLHttRequest, textStatus, errorThrown) {
-            //  alert(XMLHttRequest.responseText);
-        },
-    });
-//    var ajax = function() {
-//        alert("test")
-//             $.ajax({
-//                 type: "POST",
-//                     url : 'showData',
-//                         success: function(responseText) {
-//                             alert(responseText);
-//                         //请求成功时处理
-////                         var responseText = eval('(' + responseText + ')');
-////                         lineOption.legend.data=responseText.legend;
-////                         lineOption.xAxis[0].data = responseText.xAxis;
-////                         var serieslist = responseText.series;
-////                         //alert(serieslist);
-////                         for(var i=0;i<serieslist.length;i++) {
-////                                 lineOption.series[i] = serieslist[i];
-////                             }
-////                         //alert(lineOption.series);
-////                         myChart.setOption(lineOption,true);
-//                     },
-//                complete: function() {
-//                         //请求完成的处理
-//                     },
-//                 error: function() {
-//                        //请求出错处理
-//                         alert("加载失败");
-//                     }
-//             })
-//         }
-}
 
 function  initData2() {
     // 基于准备好的dom，初始化echarts实例
@@ -363,32 +260,4 @@ function  initData2() {
             //  alert(XMLHttRequest.responseText);
         },
     });
-//    var ajax = function() {
-//        alert("test")
-//             $.ajax({
-//                 type: "POST",
-//                     url : 'showData',
-//                         success: function(responseText) {
-//                             alert(responseText);
-//                         //请求成功时处理
-////                         var responseText = eval('(' + responseText + ')');
-////                         lineOption.legend.data=responseText.legend;
-////                         lineOption.xAxis[0].data = responseText.xAxis;
-////                         var serieslist = responseText.series;
-////                         //alert(serieslist);
-////                         for(var i=0;i<serieslist.length;i++) {
-////                                 lineOption.series[i] = serieslist[i];
-////                             }
-////                         //alert(lineOption.series);
-////                         myChart.setOption(lineOption,true);
-//                     },
-//                complete: function() {
-//                         //请求完成的处理
-//                     },
-//                 error: function() {
-//                        //请求出错处理
-//                         alert("加载失败");
-//                     }
-//             })
-//         }
 }
