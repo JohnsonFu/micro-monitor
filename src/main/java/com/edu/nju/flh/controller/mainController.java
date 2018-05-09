@@ -5,9 +5,7 @@ package com.edu.nju.flh.controller;
  */
 
 import com.edu.nju.flh.dao.ContainerDao;
-import com.edu.nju.flh.entity.SearchResult;
-import com.edu.nju.flh.entity.container;
-import com.edu.nju.flh.entity.monitorData;
+import com.edu.nju.flh.entity.*;
 import com.edu.nju.flh.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,10 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
     public class mainController {
@@ -38,6 +34,22 @@ import java.util.Objects;
             return "table";
         }
 
+        @RequestMapping("/showAllMeas")
+        public String showAllMeas(Model model) {
+            List<String> measurements=containerDao.listAllMeasurements();
+            model.addAttribute("meas",measurements);
+            return "meas";
+        }
+
+    @RequestMapping(value = "/showAllMonitorData", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> showAllMonitorData(HttpServletRequest request, HttpSession session) {
+        Map<String, Object> map = new HashMap<>();
+        String feature = request.getParameter("feat");
+        session.setAttribute("feat",feature);
+        map.put("path", "showAllChart");
+        return map;
+    }
 
     @RequestMapping(value = "/showContainer", method = RequestMethod.POST)
     @ResponseBody
@@ -63,6 +75,12 @@ import java.util.Objects;
     public String showChart() {
         return "chart2";
     }
+
+    @RequestMapping("showAllChart")
+    public String showAllChart() {
+        return "chart3";
+    }
+
 
     @RequestMapping(value = "/showData", method = RequestMethod.POST)
     @ResponseBody
@@ -99,7 +117,26 @@ import java.util.Objects;
         }
     }
 
-
-
-
+    @RequestMapping(value = "/showAllData", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> showAllData(HttpSession session) {
+        Map<String, Object> map = new HashMap<>();
+        String feature = (String)session.getAttribute("feat");
+        map.put("title","所有容器中"+feature+"数据");
+            List<monitorDataListWithCName> dataList = containerDao.queryAllDataByFeature(feature, 2000, 5);
+            if(!CollectionUtils.isEmpty(dataList)) {
+                List<SearchResult> searchResultList = dataList.stream().map(list-> Converter.convertToSearchResult(list)).collect(Collectors.toList());
+                double min= Collections.min(searchResultList.stream().map(monitorData -> monitorData.getMin()).collect(Collectors.toList()));
+                List<AllMeasVO> listlist=searchResultList.stream().map(searchResult -> {
+                    AllMeasVO vo=new AllMeasVO();
+                    vo.setName(searchResult.getName());
+                    vo.setData(searchResult.getYData());
+                    return vo;
+                }).collect(Collectors.toList());
+                map.put("minVal", min);
+                map.put("xData", searchResultList.get(0).getXData());
+                map.put("dataList", listlist);
+            }
+            return map;
+    }
     }

@@ -113,6 +113,25 @@ function showTotal(){
 
 
 
+function showMeas(measure) {
+    var data ={
+        feat:measure,
+    }
+    $.ajax({
+        type: "POST",
+        url:"showAllMonitorData",
+        data:data,
+        success:function(data){
+            var path = data.path;
+            //alert(path)
+            window.location.href =path
+        },
+        error:function(XMLHttRequest,textStatus, errorThrown){
+            //  alert(XMLHttRequest.responseText);
+        },
+    });
+}
+
 function  initData2() {
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
@@ -253,6 +272,111 @@ function  initData2() {
                     ]
                 });
             }
+            myChart.hideLoading();
+
+        },
+        error: function (XMLHttRequest, textStatus, errorThrown) {
+            //  alert(XMLHttRequest.responseText);
+        },
+    });
+}
+
+function  initAllData() {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title : {
+            text: ''
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        toolbox: {
+            feature: {
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        legend: {
+            data:[]
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: '数值',
+                // min: 0,
+                // max: 250,
+                // interval: 50,
+                axisLabel: {
+                    formatter: '{value} yr'
+                }
+
+            }
+        ],
+        dataZoom: [{
+            type: 'slider',
+            show: true,
+            xAxisIndex: [0],
+            left: '9%',
+            bottom: -5,
+            start: 20,
+            end: 100 //初始化滚动条
+        }],
+        series: [
+            {
+                name:'数据',
+                type:'line',
+                data:[]
+            },
+            {
+                name:'数据2',
+                type:'line',
+                data:[]
+            }
+        ]
+    };
+
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+    // alert("rest")
+    $.ajax({
+        type: "POST",
+        url: "showAllData",
+        success: function (data) {
+            option.xAxis[0].data=data.xData;
+            option.yAxis[0].min=data.minVal;
+            option.title.text=data.title;
+            var legends = [];// 准备存放图例数据
+            var Series = []; // 准备存放图表数据
+            var json = data.dataList;// 后台返回的json
+            var Item = function(){
+                return {
+                    name:'',
+                    type:'line',
+                    data:[]
+                }
+            };
+            for(var i=0;i < json.length;i++){
+                var it = new Item();
+                it.name = json[i].name;// 先将每一项填充数据
+                legends.push(json[i].name);// 将每一项的图例名称也放到图例的数组中
+                it.data = json[i].data;
+                Series.push(it);// 将item放在series中
+            }
+            option.legend.data = legends;// 设置图例
+            option.series = Series; // 设置图表
+            myChart.setOption(option)
             myChart.hideLoading();
 
         },

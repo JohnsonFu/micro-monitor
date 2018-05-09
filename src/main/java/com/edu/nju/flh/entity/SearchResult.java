@@ -11,5 +11,6 @@ import java.util.List;
 public class SearchResult {
     private List<String> xData;
     private List<String> yData;
+    private String name;
     private double min;
 }
