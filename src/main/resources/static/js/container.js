@@ -19,9 +19,6 @@ function show(i){
         },
         error:function(XMLHttRequest,textStatus, errorThrown){
             alert(XMLHttRequest.responseText);
-//        	alert(XMLHttpRequest.status);
-//        	alert(XMLHttpRequest.readyState);
-//        	alert(textStatus);
         },
     });
 }
@@ -54,32 +51,7 @@ function check_exam_name(){
     });
 }
 
-function login(){
-    var email = $("#email").val();
-    var password = $("#password").val();
-    var data ={
-        email: email,
-        password: password
-    }
-    $.ajax({
-        type: "POST",
-        url:"/login",
-//        data: $.param({"email":$("#email").val(),"password":$("#password").val()}),
-//        dataType:json,
-        data:data,
-        async : true,
-        success:function(data){
-            var path = data.path;
-            window.location.href =path
-        },
-        error:function(XMLHttRequest,textStatus, errorThrown){
-            alert(XMLHttRequest.responseText);
-//        	alert(XMLHttpRequest.status);
-//        	alert(XMLHttpRequest.readyState);
-//        	alert(textStatus);
-        },
-    });
-}
+
 
 
 function showIndex(contName,meas){
@@ -141,79 +113,23 @@ function showTotal(){
 
 
 
-function  initData() {
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
-
-    // 指定图表的配置项和数据
-    var option = {
-        title: {
-            text: 'ECharts 入门示例'
-        },
-        tooltip: {},
-        legend: {
-            data: ['销量']
-        },
-        xAxis: {
-            data: []
-        },
-        yAxis: {},
-        series: [{
-            name: '销量',
-            type: 'line',
-            data: []
-        }]
-    };
-
-    // 使用刚指定的配置项和数据显示图表。
-    //myChart.setOption(option);
-    alert("rest")
+function showMeas(measure) {
+    var data ={
+        feat:measure,
+    }
     $.ajax({
         type: "POST",
-        url: "showData",
-        success: function (data) {
-            alert(data.dataList)
-            var dataList=data.dataList;
-            for(var i=0;i<dataList.length;i++){
-                option.xAxis.data[i]=dataList[i].time;
-                option.series.data[i]=dataList[i].value;
-            }
-            alert(option.xAxis.data[0])
-            myChart.setOption(option)
-
+        url:"showAllMonitorData",
+        data:data,
+        success:function(data){
+            var path = data.path;
+            //alert(path)
+            window.location.href =path
         },
-        error: function (XMLHttRequest, textStatus, errorThrown) {
+        error:function(XMLHttRequest,textStatus, errorThrown){
             //  alert(XMLHttRequest.responseText);
         },
     });
-//    var ajax = function() {
-//        alert("test")
-//             $.ajax({
-//                 type: "POST",
-//                     url : 'showData',
-//                         success: function(responseText) {
-//                             alert(responseText);
-//                         //请求成功时处理
-////                         var responseText = eval('(' + responseText + ')');
-////                         lineOption.legend.data=responseText.legend;
-////                         lineOption.xAxis[0].data = responseText.xAxis;
-////                         var serieslist = responseText.series;
-////                         //alert(serieslist);
-////                         for(var i=0;i<serieslist.length;i++) {
-////                                 lineOption.series[i] = serieslist[i];
-////                             }
-////                         //alert(lineOption.series);
-////                         myChart.setOption(lineOption,true);
-//                     },
-//                complete: function() {
-//                         //请求完成的处理
-//                     },
-//                 error: function() {
-//                        //请求出错处理
-//                         alert("加载失败");
-//                     }
-//             })
-//         }
 }
 
 function  initData2() {
@@ -277,9 +193,13 @@ function  initData2() {
         type: "POST",
         url: "showData",
         success: function (data) {
-          //  alert(data.xData)
             if(data.instance==1) {
                 myChart.setOption({
+                    title : {
+                        text: data.title,
+                        x: 'center',
+                        align: 'right'
+                    },
                     xAxis: [
                         {
                             data: data.xData
@@ -316,6 +236,11 @@ function  initData2() {
                 });
             }else{
                 myChart.setOption({
+                    title : {
+                        text: data.title,
+                        x: 'center',
+                        align: 'right'
+                    },
                     xAxis: [
                         {
                             data: data.xData
@@ -354,32 +279,109 @@ function  initData2() {
             //  alert(XMLHttRequest.responseText);
         },
     });
-//    var ajax = function() {
-//        alert("test")
-//             $.ajax({
-//                 type: "POST",
-//                     url : 'showData',
-//                         success: function(responseText) {
-//                             alert(responseText);
-//                         //请求成功时处理
-////                         var responseText = eval('(' + responseText + ')');
-////                         lineOption.legend.data=responseText.legend;
-////                         lineOption.xAxis[0].data = responseText.xAxis;
-////                         var serieslist = responseText.series;
-////                         //alert(serieslist);
-////                         for(var i=0;i<serieslist.length;i++) {
-////                                 lineOption.series[i] = serieslist[i];
-////                             }
-////                         //alert(lineOption.series);
-////                         myChart.setOption(lineOption,true);
-//                     },
-//                complete: function() {
-//                         //请求完成的处理
-//                     },
-//                 error: function() {
-//                        //请求出错处理
-//                         alert("加载失败");
-//                     }
-//             })
-//         }
+}
+
+function  initAllData() {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title : {
+            text: ''
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        toolbox: {
+            feature: {
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        legend: {
+            data:[]
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月']
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: '数值',
+                // min: 0,
+                // max: 250,
+                // interval: 50,
+                axisLabel: {
+                    formatter: '{value} yr'
+                }
+
+            }
+        ],
+        dataZoom: [{
+            type: 'slider',
+            show: true,
+            xAxisIndex: [0],
+            left: '9%',
+            bottom: -5,
+            start: 20,
+            end: 100 //初始化滚动条
+        }],
+        series: [
+            {
+                name:'数据',
+                type:'line',
+                data:[]
+            },
+            {
+                name:'数据2',
+                type:'line',
+                data:[]
+            }
+        ]
+    };
+
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+    // alert("rest")
+    $.ajax({
+        type: "POST",
+        url: "showAllData",
+        success: function (data) {
+            option.xAxis[0].data=data.xData;
+            option.yAxis[0].min=data.minVal;
+            option.title.text=data.title;
+            var legends = [];// 准备存放图例数据
+            var Series = []; // 准备存放图表数据
+            var json = data.dataList;// 后台返回的json
+            var Item = function(){
+                return {
+                    name:'',
+                    type:'line',
+                    data:[]
+                }
+            };
+            for(var i=0;i < json.length;i++){
+                var it = new Item();
+                it.name = json[i].name;// 先将每一项填充数据
+                legends.push(json[i].name);// 将每一项的图例名称也放到图例的数组中
+                it.data = json[i].data;
+                Series.push(it);// 将item放在series中
+            }
+            option.legend.data = legends;// 设置图例
+            option.series = Series; // 设置图表
+            myChart.setOption(option)
+            myChart.hideLoading();
+
+        },
+        error: function (XMLHttRequest, textStatus, errorThrown) {
+            //  alert(XMLHttRequest.responseText);
+        },
+    });
 }

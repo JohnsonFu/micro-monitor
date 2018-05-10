@@ -2,6 +2,7 @@ package com.edu.nju.flh.dao;
 
 import com.edu.nju.flh.entity.container;
 import com.edu.nju.flh.entity.monitorData;
+import com.edu.nju.flh.entity.monitorDataListWithCName;
 
 import java.util.List;
 /**
@@ -13,4 +14,5 @@ public interface ContainerDao {
     public List<String> listAllMeasurements();
     public List<monitorData> queryDataByCNameAndFeature(String contName,String feature,int count,int groupbyTimeSecond);
     public List<List<monitorData>> queryPer_cpu(String contName, int i, int i1);
+    public List<monitorDataListWithCName> queryAllDataByFeature(String feature, int i, int i1);
 }

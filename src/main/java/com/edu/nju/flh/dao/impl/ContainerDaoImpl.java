@@ -3,6 +3,7 @@ package com.edu.nju.flh.dao.impl;
 import com.edu.nju.flh.dao.ContainerDao;
 import com.edu.nju.flh.entity.container;
 import com.edu.nju.flh.entity.monitorData;
+import com.edu.nju.flh.entity.monitorDataListWithCName;
 import org.apache.commons.collections.CollectionUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
@@ -197,6 +198,57 @@ public class ContainerDaoImpl implements ContainerDao {
                 monitorDatas.add(monitorDatas1);
             }
 
+        }
+        return monitorDatas;    }
+
+    @Override
+    public List<monitorDataListWithCName> queryAllDataByFeature(String feature, int count, int groupbyTimeSecond) {
+        List<monitorDataListWithCName> monitorDatas=new ArrayList<>();
+        String sql="select mean(value) from "+feature+" where time > now() - 1d group by time("+groupbyTimeSecond+"s),container_name order by time desc limit "+count;
+        // String sql="select value from "+feature+" where time > now() - 1d and container_name = '"+contName+"' order by time  limit "+count;
+        System.out.println(sql);
+        // String sql="select * from "+feature+" where container_name='"+contName+"' limit "+count;
+        QueryResult queryResult = influxDb.query(new Query(sql, database));
+        List<QueryResult.Result> results = queryResult.getResults();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        if (CollectionUtils.isNotEmpty(results)) {
+            for (QueryResult.Result result : results) {
+                List<QueryResult.Series>seriesList=result.getSeries();
+                if(Objects.isNull(seriesList)||seriesList.size()==0){
+                    return monitorDatas;
+                }
+                for(int i=0;i<seriesList.size();i++){
+                List<List<Object>> objectList1=seriesList.get(i).getValues();
+                    monitorDataListWithCName dataListWithCName=new monitorDataListWithCName();
+                    String name=seriesList.get(i).getTags().get("container_name");
+                    dataListWithCName.setName(name);
+                LinkedList<monitorData> monitorDatas1=new LinkedList<>();
+                for(List<Object> l:objectList1){
+                    monitorData monitorData=new monitorData();
+                    try {
+                        String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                        Date date=sdf.parse(strings[0].toString());
+                        date.setHours(date.getHours()+8);
+                        if(!Objects.equals(strings[1],"null")) {
+                            Double value = Double.parseDouble(strings[1].toString());
+                            monitorData.setValue(value);
+                        }else{
+                            monitorData.setValue(-1);
+                        }
+                        Calendar calendar=Calendar.getInstance();
+                        calendar.setTime(date);
+                        String time=calendar.get(Calendar.YEAR)+"-"+(calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.DAY_OF_MONTH)+" "+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE)+":"+calendar.get(Calendar.SECOND);
+                        monitorData.setTime(time);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    monitorDatas1.addFirst(monitorData);
+                }
+                dataListWithCName.setData(monitorDatas1);
+                monitorDatas.add(dataListWithCName);
+            }
+
+        }
         }
         return monitorDatas;    }
 
