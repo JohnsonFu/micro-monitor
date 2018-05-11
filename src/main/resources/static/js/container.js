@@ -135,7 +135,9 @@ function showMeas(measure) {
 function  initData2() {
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
-
+    myChart.showLoading({
+        text: "数据加载中..."
+    });
     // 指定图表的配置项和数据
     var option = {
         tooltip: {
@@ -284,7 +286,9 @@ function  initData2() {
 function  initAllData() {
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
-
+    myChart.showLoading({
+        text: "数据加载中..."
+    });
     // 指定图表的配置项和数据
     var option = {
         title : {
