@@ -8,6 +8,7 @@ import com.edu.nju.flh.dao.ContainerDao;
 import com.edu.nju.flh.entity.*;
 import com.edu.nju.flh.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
@@ -22,8 +23,18 @@ import java.util.stream.Collectors;
 
 @Controller
     public class mainController {
-        @Autowired
-        private ContainerDao containerDao;
+
+    @Value("${container_query_size}")
+    private int container_query_size;
+
+    @Value("${measure_query_size}")
+    private int measure_query_size;
+
+    @Value("${mean_time_interval}")
+    private int mean_time_interval;
+
+    @Autowired
+    private ContainerDao containerDao;
 
         @RequestMapping("/")
         public String home(Model model) {
@@ -90,7 +101,7 @@ import java.util.stream.Collectors;
         String feature = (String)session.getAttribute("feat");
         map.put("title",contName+"容器中"+feature+"数据");
         if(!Objects.equals(feature,"cpu_usage_per_cpu")) {
-            List<monitorData> dataList = containerDao.queryDataByCNameAndFeature(contName, feature, 2000, 5);
+            List<monitorData> dataList = containerDao.queryDataByCNameAndFeature(contName, feature, container_query_size, mean_time_interval);
             if(!CollectionUtils.isEmpty(dataList)) {
                 SearchResult searchResult = Converter.convertToSearchResult(dataList);
                 map.put("minVal", searchResult.getMin());
@@ -100,7 +111,7 @@ import java.util.stream.Collectors;
             }
             return map;
         }else{
-            List<List<monitorData>> dataList = containerDao.queryPer_cpu(contName, 2000,5);
+            List<List<monitorData>> dataList = containerDao.queryPer_cpu(contName, container_query_size,mean_time_interval);
             if(!CollectionUtils.isEmpty(dataList)) {
                 List<monitorData> dataList0 = dataList.get(0);
                 List<monitorData> dataList1 = dataList.get(1);
@@ -123,7 +134,7 @@ import java.util.stream.Collectors;
         Map<String, Object> map = new HashMap<>();
         String feature = (String)session.getAttribute("feat");
         map.put("title","所有容器中"+feature+"数据");
-            List<monitorDataListWithCName> dataList = containerDao.queryAllDataByFeature(feature, 2000, 5);
+            List<monitorDataListWithCName> dataList = containerDao.queryAllDataByFeature(feature, measure_query_size, mean_time_interval);
             if(!CollectionUtils.isEmpty(dataList)) {
                 List<SearchResult> searchResultList = dataList.stream().map(list-> Converter.convertToSearchResult(list)).collect(Collectors.toList());
                 double min= Collections.min(searchResultList.stream().map(monitorData -> monitorData.getMin()).collect(Collectors.toList()));
