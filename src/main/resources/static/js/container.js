@@ -9,6 +9,7 @@ function show(i){
         type: "POST",
         url:"showContainer",
         data:data,
+        dataType : "json",
         success:function(data){
             if(data.result){
                 $("#false").show();
@@ -22,38 +23,6 @@ function show(i){
         },
     });
 }
-
-function check_exam_name(){
-    var exam_name = $("#exam_name").val();
-    var data ={
-        examName: exam_name,
-    }
-    $("#true").hide();
-    $("#false").hide();
-    $.ajax({
-        type: "POST",
-        url:"exam/checkExamName",
-        data:data,
-        success:function(data){
-            if(data.result){
-                $("#false").show();
-            }
-            else{
-                $("#true").show();
-            }
-        },
-        error:function(XMLHttRequest,textStatus, errorThrown){
-            alert(XMLHttRequest.responseText);
-//        	alert(XMLHttpRequest.status);
-//        	alert(XMLHttpRequest.readyState);
-//        	alert(textStatus);
-        },
-    });
-}
-
-
-
-
 function showIndex(contName,meas){
     var arrList = meas.valueOf().replace('[','').replace(']','').split(',');
     var tbody=document.getElementById("cont_body");
@@ -83,6 +52,7 @@ function showMonitorData(contName,feature){
         type: "POST",
         url:"showMonitorData",
         data:data,
+        dataType : "json",
         success:function(data){
            var path = data.path;
             //alert(path)
@@ -121,6 +91,7 @@ function showMeas(measure) {
         type: "POST",
         url:"showAllMonitorData",
         data:data,
+        dataType : "json",
         success:function(data){
             var path = data.path;
             //alert(path)
@@ -135,7 +106,9 @@ function showMeas(measure) {
 function  initData2() {
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
-
+    myChart.showLoading({
+        text: "数据加载中..."
+    });
     // 指定图表的配置项和数据
     var option = {
         tooltip: {
@@ -192,6 +165,7 @@ function  initData2() {
     $.ajax({
         type: "POST",
         url: "showData",
+        dataType : "json",
         success: function (data) {
             if(data.instance==1) {
                 myChart.setOption({
@@ -224,14 +198,6 @@ function  initData2() {
                             name: '数据',
                             data: data.yData
                         }
-                        // {
-                        //     name:'降水量',
-                        //     data:data.c_rain
-                        // },
-                        // {
-                        //     name:'平均温度',
-                        //     data:data.c_avgt
-                        // }
                     ]
                 });
             }else{
@@ -276,7 +242,7 @@ function  initData2() {
 
         },
         error: function (XMLHttRequest, textStatus, errorThrown) {
-            //  alert(XMLHttRequest.responseText);
+              alert(XMLHttRequest.responseText);
         },
     });
 }
@@ -284,7 +250,9 @@ function  initData2() {
 function  initAllData() {
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
-
+    myChart.showLoading({
+        text: "数据加载中..."
+    });
     // 指定图表的配置项和数据
     var option = {
         title : {
@@ -353,6 +321,7 @@ function  initAllData() {
     $.ajax({
         type: "POST",
         url: "showAllData",
+        dataType : "json",
         success: function (data) {
             option.xAxis[0].data=data.xData;
             option.yAxis[0].min=data.minVal;
@@ -381,7 +350,7 @@ function  initAllData() {
 
         },
         error: function (XMLHttRequest, textStatus, errorThrown) {
-            //  alert(XMLHttRequest.responseText);
+              alert(XMLHttRequest.responseText);
         },
     });
 }
