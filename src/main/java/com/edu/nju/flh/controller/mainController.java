@@ -4,8 +4,9 @@ package com.edu.nju.flh.controller;
  * Created by fulinhua on 2018/3/24.
  */
 
-import com.edu.nju.flh.dao.ContainerDao;
 import com.edu.nju.flh.entity.*;
+import com.edu.nju.flh.service.ContainerService;
+import com.edu.nju.flh.service.MonitorDataService;
 import com.edu.nju.flh.util.Converter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,12 +35,15 @@ import java.util.stream.Collectors;
     private int mean_time_interval;
 
     @Autowired
-    private ContainerDao containerDao;
+    private ContainerService containerService;
+
+    @Autowired
+    private MonitorDataService monitorDataService;
 
         @RequestMapping("/")
         public String home(Model model) {
-           List<container> containerList=containerDao.listAllContainers();
-            List<String> measurements=containerDao.listAllMeasurements();
+           List<container> containerList=containerService.listAllContainers();
+            List<String> measurements=containerService.listAllMeasurements();
             model.addAttribute("containers",containerList);
             model.addAttribute("meas",measurements);
             return "table";
@@ -47,7 +51,7 @@ import java.util.stream.Collectors;
 
         @RequestMapping("/showAllMeas")
         public String showAllMeas(Model model) {
-            List<String> measurements=containerDao.listAllMeasurements();
+            List<String> measurements=containerService.listAllMeasurements();
             model.addAttribute("meas",measurements);
             return "meas";
         }
@@ -101,7 +105,7 @@ import java.util.stream.Collectors;
         String feature = (String)session.getAttribute("feat");
         map.put("title",contName+"容器中"+feature+"数据");
         if(!Objects.equals(feature,"cpu_usage_per_cpu")) {
-            List<monitorData> dataList = containerDao.queryDataByCNameAndFeature(contName, feature, container_query_size, mean_time_interval);
+            List<monitorData> dataList = monitorDataService.getDataByCNameAndFeature(contName, feature, container_query_size, mean_time_interval);
             if(!CollectionUtils.isEmpty(dataList)) {
                 SearchResult searchResult = Converter.convertToSearchResult(dataList);
                 map.put("minVal", searchResult.getMin());
@@ -111,7 +115,7 @@ import java.util.stream.Collectors;
             }
             return map;
         }else{
-            List<List<monitorData>> dataList = containerDao.queryPer_cpu(contName, container_query_size,mean_time_interval);
+            List<List<monitorData>> dataList = monitorDataService.getPer_cpu(contName, container_query_size,mean_time_interval);
             if(!CollectionUtils.isEmpty(dataList)) {
                 List<monitorData> dataList0 = dataList.get(0);
                 List<monitorData> dataList1 = dataList.get(1);
@@ -134,7 +138,7 @@ import java.util.stream.Collectors;
         Map<String, Object> map = new HashMap<>();
         String feature = (String)session.getAttribute("feat");
         map.put("title","所有容器中"+feature+"数据");
-            List<monitorDataListWithCName> dataList = containerDao.queryAllDataByFeature(feature, measure_query_size, mean_time_interval);
+            List<monitorDataListWithCName> dataList = monitorDataService.getAllDataByFeature(feature, measure_query_size, mean_time_interval);
             if(!CollectionUtils.isEmpty(dataList)) {
                 List<SearchResult> searchResultList = dataList.stream().map(list-> Converter.convertToSearchResult(list)).collect(Collectors.toList());
                 double min= Collections.min(searchResultList.stream().map(monitorData -> monitorData.getMin()).collect(Collectors.toList()));

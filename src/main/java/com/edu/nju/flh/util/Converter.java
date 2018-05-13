@@ -1,6 +1,7 @@
 package com.edu.nju.flh.util;
 
 import com.edu.nju.flh.entity.SearchResult;
+import com.edu.nju.flh.entity.container;
 import com.edu.nju.flh.entity.monitorData;
 import com.edu.nju.flh.entity.monitorDataListWithCName;
 
@@ -52,5 +53,15 @@ public class Converter {
         searchResult.setYData(yData);
         searchResult.setMin(min);
         return searchResult;
+    }
+
+    public static container transferToContainer(String s) {
+        String[] stringbuffer=s.split(",");
+        container cont=new container();
+        String contName=stringbuffer[1].split("=")[1];
+        String machName=stringbuffer[2].split("=")[1];
+        cont.setName(contName);
+        cont.setMachine(machName);
+        return cont;
     }
 }

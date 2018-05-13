@@ -278,7 +278,7 @@ function  initData2() {
 
         },
         error: function (XMLHttRequest, textStatus, errorThrown) {
-            //  alert(XMLHttRequest.responseText);
+              alert(XMLHttRequest.responseText);
         },
     });
 }
@@ -385,7 +385,7 @@ function  initAllData() {
 
         },
         error: function (XMLHttRequest, textStatus, errorThrown) {
-            //  alert(XMLHttRequest.responseText);
+              alert(XMLHttRequest.responseText);
         },
     });
 }
