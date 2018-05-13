@@ -66,15 +66,6 @@ import java.util.stream.Collectors;
         json.put("path", "showAllChart");
         return json.toJSONString();
     }
-
-    @RequestMapping(value = "/showContainer", method = RequestMethod.POST)
-    @ResponseBody
-    public String showMonitor(HttpServletRequest request) {
-        JSONObject json=new JSONObject();
-        String contName = request.getParameter("contName");
-        json.put("contName", contName);
-        return json.toJSONString();
-    }
     @RequestMapping(value = "/showMonitorData", method = RequestMethod.POST)
     @ResponseBody
     public String showMonitorData(HttpServletRequest request, HttpSession session) {
