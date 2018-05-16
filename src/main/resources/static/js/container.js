@@ -1,28 +1,6 @@
 /**
  * Created by fulinhua on 2018/4/29.
  */
-function show(i){
-    var data ={
-        contName:i,
-    }
-    $.ajax({
-        type: "POST",
-        url:"showContainer",
-        data:data,
-        dataType : "json",
-        success:function(data){
-            if(data.result){
-                $("#false").show();
-            }
-            else{
-                $("#true").show();
-            }
-        },
-        error:function(XMLHttRequest,textStatus, errorThrown){
-            alert(XMLHttRequest.responseText);
-        },
-    });
-}
 function showIndex(contName,meas){
     var arrList = meas.valueOf().replace('[','').replace(']','').split(',');
     var tbody=document.getElementById("cont_body");

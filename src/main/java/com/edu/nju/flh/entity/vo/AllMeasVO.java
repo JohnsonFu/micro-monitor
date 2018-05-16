@@ -1,4 +1,4 @@
-package com.edu.nju.flh.entity;
+package com.edu.nju.flh.entity.vo;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * Created by fulinhua on 2018/5/10.
  */
 @Data
-public class monitorDataListWithCName {
-    private List<monitorData> data;
+public class AllMeasVO {
+    private List<String> data;
     private String name;
 }
