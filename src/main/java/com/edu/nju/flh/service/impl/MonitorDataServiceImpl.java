@@ -1,9 +1,12 @@
 package com.edu.nju.flh.service.impl;
 
 import com.edu.nju.flh.dao.BaseDao;
-import com.edu.nju.flh.entity.monitorData;
-import com.edu.nju.flh.entity.monitorDataListWithCName;
+import com.edu.nju.flh.entity.po.monitorData;
+import com.edu.nju.flh.entity.po.monitorDataListWithCName;
+import com.edu.nju.flh.entity.vo.AllMeasVO;
+import com.edu.nju.flh.entity.vo.SearchResult;
 import com.edu.nju.flh.service.MonitorDataService;
+import com.edu.nju.flh.util.Converter;
 import org.apache.commons.collections.CollectionUtils;
 import org.influxdb.dto.QueryResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by fulinhua on 2018/5/13.
@@ -176,5 +180,20 @@ public class MonitorDataServiceImpl implements MonitorDataService {
             }
         }
         return monitorDatas;
+    }
+
+    @Override
+    public List<SearchResult> getSearchResultFromMonitorData(List<monitorDataListWithCName> dataList) {
+      return dataList.stream().map(list-> Converter.convertToSearchResult(list)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AllMeasVO> getMeasVOFromSearchResult(List<SearchResult> searchResultList) {
+        return searchResultList.stream().map(searchResult -> {
+            AllMeasVO vo=new AllMeasVO();
+            vo.setName(searchResult.getName());
+            vo.setData(searchResult.getYData());
+            return vo;
+        }).collect(Collectors.toList());
     }
 }

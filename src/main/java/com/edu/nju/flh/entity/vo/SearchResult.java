@@ -1,4 +1,4 @@
-package com.edu.nju.flh.entity;
+package com.edu.nju.flh.entity.vo;
 
 import lombok.Data;
 

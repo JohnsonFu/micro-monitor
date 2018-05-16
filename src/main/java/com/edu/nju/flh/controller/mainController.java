@@ -5,7 +5,11 @@ package com.edu.nju.flh.controller;
  */
 
 import com.alibaba.fastjson.JSONObject;
-import com.edu.nju.flh.entity.*;
+import com.edu.nju.flh.entity.po.container;
+import com.edu.nju.flh.entity.po.monitorData;
+import com.edu.nju.flh.entity.po.monitorDataListWithCName;
+import com.edu.nju.flh.entity.vo.AllMeasVO;
+import com.edu.nju.flh.entity.vo.SearchResult;
 import com.edu.nju.flh.service.ContainerService;
 import com.edu.nju.flh.service.MonitorDataService;
 import com.edu.nju.flh.util.Converter;
@@ -132,14 +136,9 @@ import java.util.stream.Collectors;
         json.put("title","所有容器中"+feature+"数据");
             List<monitorDataListWithCName> dataList = monitorDataService.getAllDataByFeature(feature, measure_query_size, mean_time_interval);
             if(!CollectionUtils.isEmpty(dataList)) {
-                List<SearchResult> searchResultList = dataList.stream().map(list-> Converter.convertToSearchResult(list)).collect(Collectors.toList());
+                List<SearchResult> searchResultList = monitorDataService.getSearchResultFromMonitorData(dataList);
                 double min= Collections.min(searchResultList.stream().map(monitorData -> monitorData.getMin()).collect(Collectors.toList()));
-                List<AllMeasVO> listlist=searchResultList.stream().map(searchResult -> {
-                    AllMeasVO vo=new AllMeasVO();
-                    vo.setName(searchResult.getName());
-                    vo.setData(searchResult.getYData());
-                    return vo;
-                }).collect(Collectors.toList());
+                List<AllMeasVO> listlist=monitorDataService.getMeasVOFromSearchResult(searchResultList);
                 json.put("minVal", min);
                 json.put("xData", searchResultList.get(0).getXData());
                 json.put("dataList", listlist);
