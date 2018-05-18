@@ -41,11 +41,11 @@ public class MonitorDataServiceImpl implements MonitorDataService {
                 for(List<Object> l:objectList){
                     monitorData monitorData=new monitorData();
                     try {
-                        String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
-                        Date date=sdf.parse(strings[0].toString());
+                     //   String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                        Date date=sdf.parse(l.get(0).toString());
                         date.setHours(date.getHours()+8);
-                        if(!Objects.equals(strings[1],"null")) {
-                            Double value = Double.parseDouble(strings[1].toString());
+                        if(!Objects.isNull(l.get(1))) {
+                            Double value = Double.parseDouble(l.get(1).toString());
                             monitorData.setValue(value);
                         }else{
                             monitorData.setValue(-1);
@@ -83,11 +83,11 @@ public class MonitorDataServiceImpl implements MonitorDataService {
                 for(List<Object> l:objectList1){
                     monitorData monitorData=new monitorData();
                     try {
-                        String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
-                        Date date=sdf.parse(strings[0].toString());
+                      //  String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                        Date date=sdf.parse(l.get(0).toString());
                         date.setHours(date.getHours()+8);
-                        if(!Objects.equals(strings[1],"null")) {
-                            Double value = Double.parseDouble(strings[1].toString());
+                        if(!Objects.isNull(l.get(1))) {
+                            Double value = Double.parseDouble(l.get(1).toString());
                             monitorData.setValue(value);
                         }else{
                             monitorData.setValue(-1);
@@ -107,11 +107,11 @@ public class MonitorDataServiceImpl implements MonitorDataService {
                 for(List<Object> l:objectList2){
                     monitorData monitorData=new monitorData();
                     try {
-                        String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
-                        Date date=sdf.parse(strings[0].toString());
+                     //   String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                        Date date=sdf.parse(l.get(0).toString());
                         date.setHours(date.getHours()+8);
-                        if(!Objects.equals(strings[1],"null")) {
-                            Double value = Double.parseDouble(strings[1].toString());
+                        if(!Objects.isNull(l.get(1))) {
+                            Double value = Double.parseDouble(l.get(1).toString());
                             monitorData.setValue(value);
                         }else{
                             monitorData.setValue(-1);
@@ -134,7 +134,7 @@ public class MonitorDataServiceImpl implements MonitorDataService {
     }
 
     @Override
-    public List<monitorDataListWithCName> getAllDataByFeature(String feature, int count, int groupbyTimeSecond) {
+    public List<monitorDataListWithCName> getAllDataByFeature(String feature, int count, int groupbyTimeSecond){
         List<monitorDataListWithCName> monitorDatas=new ArrayList<>();
         String sql="select mean(value) from "+feature+" where time > now() - 1d group by time("+groupbyTimeSecond+"s),container_name order by time desc limit "+count;
         System.out.println(sql);
@@ -155,11 +155,11 @@ public class MonitorDataServiceImpl implements MonitorDataService {
                     for(List<Object> l:objectList1){
                         monitorData monitorData=new monitorData();
                         try {
-                            String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
-                            Date date=sdf.parse(strings[0].toString());
+                         //   String[] strings=l.toString().replace("[","").replace("]","").replace(" ","").split(",");
+                            Date date=sdf.parse(l.get(0).toString());
                             date.setHours(date.getHours()+8);
-                            if(!Objects.equals(strings[1],"null")) {
-                                Double value = Double.parseDouble(strings[1].toString());
+                            if(!Objects.isNull(l.get(1))) {
+                                Double value = Double.parseDouble(l.get(1).toString());
                                 monitorData.setValue(value);
                             }else{
                                 monitorData.setValue(-1);
